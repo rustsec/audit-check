@@ -4,15 +4,11 @@ import * as os from 'os';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
-import { Cargo } from '@actions-rs/core';
+import { Cargo } from '@rinse-repeat/actions-rs-core';
 
 import * as input from './input';
 import * as interfaces from './interfaces';
 import * as reporter from './reporter';
-
-const pkg = require('../package.json'); // eslint-disable-line @typescript-eslint/no-var-requires
-
-const USER_AGENT = `${pkg.name}/${pkg.version} (${pkg.bugs.url})`;
 
 async function getData(
     ignore: string[] | undefined,
@@ -84,20 +80,18 @@ export async function run(actionInput: input.Input): Promise<void> {
         return;
     }
 
-    const client = new github.GitHub(actionInput.token, {
-        userAgent: USER_AGENT,
-    });
+    // const octokit = github.getOctokit(actionInput.token, {userAgent: USER_AGENT});
     const advisories = report.vulnerabilities.list;
     if (github.context.eventName == 'schedule') {
         core.debug(
             'Action was triggered on a schedule event, creating an Issues report',
         );
-        await reporter.reportIssues(client, advisories, warnings);
+        await reporter.reportIssues(actionInput.token, advisories, warnings);
     } else {
         core.debug(
             `Action was triggered on a ${github.context.eventName} event, creating a Check report`,
         );
-        await reporter.reportCheck(client, advisories, warnings);
+        await reporter.reportCheck(actionInput.token, advisories, warnings);
     }
 }
 

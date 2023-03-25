@@ -1,7 +1,6 @@
 # Rust `audit-check` Action
 
 ![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)
-[![Gitter](https://badges.gitter.im/actions-rs/community.svg)](https://gitter.im/actions-rs/community)
 
 > Security vulnerabilities audit
 
@@ -28,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/audit-check@v1
+      - uses: rustsec/audit-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -43,6 +42,27 @@ created by this Action will be marked as "failed".\
 Note that informational advisories are not affecting the check status.
 
 ![Check screenshot](.github/check_screenshot.png)
+
+#### Granular Permissions
+
+These are the typically used permissions:
+
+```yaml
+name: 'rust-audit-check'
+github-token:
+  action-input:
+    input: token
+    is-default: false
+  permissions:
+    issues: write
+    issues-reason: to create issues
+    checks: write
+    checks-reason: to create check
+```
+
+The action does not raise issues when it is not triggered from a "cron" scheduled workflow.
+
+When running the action as scheduled it will crate issues but e.g. in PR / push fails the action.
 
 #### Limitations
 
