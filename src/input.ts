@@ -2,8 +2,8 @@
  * Parse action input into a some proper thing.
  */
 
-import { input } from '@actions-rs/core';
-import { getInputList } from '@actions-rs/core/dist/input';
+import { input } from '@rinse-repeat/actions-rs-core';
+import { getInputList } from '@rinse-repeat/actions-rs-core/dist/input';
 
 // Parsed action input
 export interface Input {
