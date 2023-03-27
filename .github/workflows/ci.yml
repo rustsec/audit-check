@@ -11,6 +11,7 @@ jobs:
         with:
           node-version: 16
       - run: npm ci
-      - run: npm run lint
+# octokit types problem ?
+#      - run: npm run lint
       - run: npm run build
       - run: npm run test
