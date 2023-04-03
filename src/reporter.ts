@@ -37,6 +37,20 @@ function makeReport(
                 });
                 break;
 
+            case 'unsound':
+                preparedWarnings.push({
+                    advisory: warning.advisory,
+                    package: warning.package,
+                });
+                break;
+
+            case 'notice':
+                preparedWarnings.push({
+                    advisory: warning.advisory,
+                    package: warning.package,
+                });
+                break;
+
             case 'informational':
                 preparedWarnings.push({
                     advisory: warning.advisory,
