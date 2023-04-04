@@ -15,6 +15,7 @@ interface Stats {
     critical: number;
     notices: number;
     unmaintained: number;
+    unsound: number;
     other: number;
 }
 
@@ -89,6 +90,7 @@ function getStats(
     let critical = 0;
     let notices = 0;
     let unmaintained = 0;
+    let unsound = 0;
     let other = 0;
     for (const vulnerability of vulnerabilities) {
         switch (vulnerability.advisory.informational) {
@@ -97,6 +99,9 @@ function getStats(
                 break;
             case 'unmaintained':
                 unmaintained += 1;
+                break;
+            case 'unsound':
+                unsound += 1;
                 break;
             case null:
                 critical += 1;
@@ -113,6 +118,10 @@ function getStats(
                 unmaintained += 1;
                 break;
 
+            case 'unsound':
+                unsound += 1;
+                break;
+
             default:
                 // Both yanked and informational types of kind
                 other += 1;
@@ -124,6 +133,7 @@ function getStats(
         critical: critical,
         notices: notices,
         unmaintained: unmaintained,
+        unsound: unsound,
         other: other,
     };
 }
@@ -132,14 +142,16 @@ function getSummary(stats: Stats): string {
     const blocks: string[] = [];
 
     if (stats.critical > 0) {
-        // TODO: Plural
-        blocks.push(`${stats.critical} advisory(ies)`);
+        blocks.push(`${stats.critical} advisories`);
     }
     if (stats.notices > 0) {
         blocks.push(`${stats.notices} notice${plural(stats.notices)}`);
     }
     if (stats.unmaintained > 0) {
         blocks.push(`${stats.unmaintained} unmaintained`);
+    }
+    if (stats.unsound > 0) {
+        blocks.push(`${stats.unsound} unsound`);
     }
     if (stats.other > 0) {
         blocks.push(`${stats.other} other`);
@@ -275,6 +287,8 @@ export async function reportIssues(
     for (const warning of warnings) {
         let advisory: interfaces.Advisory;
         switch (warning.kind) {
+            case 'unsound':
+            case 'notice':
             case 'unmaintained':
             case 'informational':
                 advisory = warning.advisory;
