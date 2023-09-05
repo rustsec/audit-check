@@ -4,7 +4,7 @@ import * as os from 'os';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
-import { Cargo } from '@rinse-repeat/actions-rs-core';
+import { Cargo } from '@clechasseur/rs-actions-core';
 
 import * as input from './input';
 import * as interfaces from './interfaces';

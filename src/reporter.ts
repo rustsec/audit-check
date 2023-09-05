@@ -4,7 +4,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as nunjucks from 'nunjucks';
 
-import { checks } from '@rinse-repeat/actions-rs-core';
+import { checks } from '@clechasseur/rs-actions-core';
 import * as interfaces from './interfaces';
 import * as templates from './templates';
 
