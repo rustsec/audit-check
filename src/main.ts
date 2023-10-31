@@ -100,7 +100,7 @@ async function main(): Promise<void> {
         const actionInput = input.get();
         await run(actionInput);
     } catch (error) {
-        core.setFailed(error.message);
+        core.setFailed((error as Error).message);
     }
 
     return;

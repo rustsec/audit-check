@@ -34,24 +34,22 @@
         "url": "https://github.com/actions-rs/audit-check/issues"
     },
     "dependencies": {
-        "@clechasseur/rs-actions-core": "^2.0.0",
-        "npm-check-updates": "^16.8.0",
-        "nunjucks": "^3.2.3"
+        "@clechasseur/rs-actions-core": "^3.0.1",
+        "nunjucks": "^3.2.4"
     },
     "devDependencies": {
-        "@typescript-eslint/eslint-plugin": "^5.56.0",
+        "@typescript-eslint/parser": "^6.9.0",
+        "@typescript-eslint/eslint-plugin": "^6.9.0",
         "ts-node": "^10.9.1",
-        "@typescript-eslint/parser": "^5.56.0",
-        "eslint": "^8.36.0",
-        "eslint-config-prettier": "^6.11.0",
-        "eslint-plugin-prettier": "^3.1.3",
-        "@types/jest": "^26.0.1",
-        "@types/node": "^16.11.7",
-        "@vercel/ncc": "0.36.1",
-        "jest": "^26.0.1",
-        "jest-circus": "^26.0.1",
-        "ts-jest": "^26.0.1",
-        "typescript": "^3.8.3",
-        "prettier": "^2.0.5"
+        "eslint": "^8.52.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-prettier": "^5.0.1",
+        "@types/jest": "^29.5.6",
+        "@types/node": "^20.8.7",
+        "@vercel/ncc": "0.38.1",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.1.1",
+        "typescript": "^5.2.2",
+        "prettier": "^3.0.3"
     }
 }
