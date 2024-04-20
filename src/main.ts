@@ -12,6 +12,7 @@ import * as reporter from './reporter';
 
 async function getData(
     ignore: string[] | undefined,
+    file: string,
 ): Promise<interfaces.Report> {
     const cargo = await Cargo.get();
     await cargo.findOrInstall('cargo-audit');
@@ -26,6 +27,7 @@ async function getData(
             commandArray.push('--ignore', item);
         }
         commandArray.push('--json');
+        commandArray.push('--file', file);
         await cargo.call(commandArray, {
             ignoreReturnCode: true,
             listeners: {
@@ -48,7 +50,8 @@ async function getData(
 
 export async function run(actionInput: input.Input): Promise<void> {
     const ignore = actionInput.ignore;
-    const report = await getData(ignore);
+    const file = actionInput.file;
+    const report = await getData(ignore, file);
     let shouldReport = false;
     if (!report.vulnerabilities.found) {
         core.info('No vulnerabilities were found');
