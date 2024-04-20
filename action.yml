@@ -11,10 +11,10 @@ inputs:
   ignore:
     description: Comma-separated list of advisory ids to ignore
     required: false
-  file:
-    description: The path to the Cargo.lock file to scan.
+  working-directory:
+    description: The directory of the Cargo.toml / Cargo.lock files to scan.
     required: false
-    default: Cargo.lock
+    default: .
 
 runs:
   using: 'node16'

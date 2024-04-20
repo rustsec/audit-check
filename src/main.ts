@@ -12,12 +12,12 @@ import * as reporter from './reporter';
 
 async function getData(
     ignore: string[] | undefined,
-    file: string,
+    workingDirectory: string,
 ): Promise<interfaces.Report> {
     const cargo = await Cargo.get();
     await cargo.findOrInstall('cargo-audit');
 
-    await cargo.call(['generate-lockfile']);
+    await cargo.call(['generate-lockfile', '--manifest-path', `${workingDirectory}/Cargo.toml`]);
 
     let stdout = '';
     try {
@@ -27,7 +27,7 @@ async function getData(
             commandArray.push('--ignore', item);
         }
         commandArray.push('--json');
-        commandArray.push('--file', file);
+        commandArray.push('--file', `${workingDirectory}/Cargo.lock`);
         await cargo.call(commandArray, {
             ignoreReturnCode: true,
             listeners: {
@@ -50,8 +50,8 @@ async function getData(
 
 export async function run(actionInput: input.Input): Promise<void> {
     const ignore = actionInput.ignore;
-    const file = actionInput.file;
-    const report = await getData(ignore, file);
+    const workingDirectory = actionInput.workingDirectory;
+    const report = await getData(ignore, workingDirectory);
     let shouldReport = false;
     if (!report.vulnerabilities.found) {
         core.info('No vulnerabilities were found');

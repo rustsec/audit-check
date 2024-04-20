@@ -9,13 +9,13 @@ import { getInputList } from '@rinse-repeat/actions-rs-core/dist/input';
 export interface Input {
     token: string;
     ignore: string[];
-    file: string;
+    workingDirectory: string;
 }
 
 export function get(): Input {
     return {
         token: input.getInput('token', { required: true }),
         ignore: getInputList('ignore', { required: false }),
-        file: input.getInput('file', { required: false }) ?? 'Cargo.lock',
+        workingDirectory: input.getInput('working-directory', { required: false }) ?? '.',
     };
 }

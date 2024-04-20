@@ -104,6 +104,6 @@ For each new advisory (including informal) an issue will be created:
 | ------------| -------- | ---------------------------------------------------------------------------| ------ | --------|
 | `token`     | ✓        | [GitHub token], usually a `${{ secrets.GITHUB_TOKEN }}`                    | string |         |
 | `ignore`    |          | Comma-separated list of advisory ids to ignore                             | string |         |
-| `file`      |          | The path to the Cargo.lock file to scan                                    | string | Cargo.lock |
+| `working-directory`|   | The directory of the Cargo.toml / Cargo.lock files to scan.                | string | `.`     |
 
 [GitHub token]: https://help.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token
