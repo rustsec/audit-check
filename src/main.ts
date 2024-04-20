@@ -48,9 +48,16 @@ async function getData(
     return JSON.parse(stdout);
 }
 
+function removeTrailingSlash(str) {
+    if(str[str.length - 1] === '/') {
+        return str.substr(0, str.length - 1);
+    }
+    return str;
+}
+
 export async function run(actionInput: input.Input): Promise<void> {
     const ignore = actionInput.ignore;
-    const workingDirectory = actionInput.workingDirectory;
+    const workingDirectory = removeTrailingSlash(actionInput.workingDirectory);
     const report = await getData(ignore, workingDirectory);
     let shouldReport = false;
     if (!report.vulnerabilities.found) {
