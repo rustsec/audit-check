@@ -6,10 +6,16 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Create npm configuration
+        run: echo "//npm.pkg.github.com/:_authToken=${token}" >> ~/.npmrc
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version-file: '.nvmrc'
+          cache: 'npm'
       - run: npm ci
 # octokit types problem ?
 #      - run: npm run lint

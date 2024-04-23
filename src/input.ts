@@ -2,8 +2,7 @@
  * Parse action input into a some proper thing.
  */
 
-import { input } from '@rinse-repeat/actions-rs-core';
-import { getInputList } from '@rinse-repeat/actions-rs-core/dist/input';
+import { input } from '@clechasseur/rs-actions-core';
 
 // Parsed action input
 export interface Input {
@@ -14,6 +13,6 @@ export interface Input {
 export function get(): Input {
     return {
         token: input.getInput('token', { required: true }),
-        ignore: getInputList('ignore', { required: false }),
+        ignore: input.getInputList('ignore', { required: false }),
     };
 }
