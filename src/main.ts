@@ -16,8 +16,6 @@ async function getData(
     const cargo = await Cargo.get();
     await cargo.findOrInstall('cargo-audit');
 
-    await cargo.call(['generate-lockfile']);
-
     let stdout = '';
     try {
         core.startGroup('Calling cargo-audit (JSON output)');
