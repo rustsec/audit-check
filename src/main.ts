@@ -17,8 +17,6 @@ async function getData(
     const cargo = await Cargo.get();
     await cargo.findOrInstall('cargo-audit');
 
-    await cargo.call(['generate-lockfile', '--manifest-path', `${workingDirectory}/Cargo.toml`]);
-
     let stdout = '';
     try {
         core.startGroup('Calling cargo-audit (JSON output)');
@@ -49,7 +47,7 @@ async function getData(
 }
 
 function removeTrailingSlash(str) {
-    if(str[str.length - 1] === '/') {
+    if (str[str.length - 1] === '/') {
         return str.substr(0, str.length - 1);
     }
     return str;
