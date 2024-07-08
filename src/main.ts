@@ -12,6 +12,7 @@ import * as reporter from './reporter';
 
 async function getData(
     ignore: string[] | undefined,
+    workingDirectory: string,
 ): Promise<interfaces.Report> {
     const cargo = await Cargo.get();
     await cargo.findOrInstall('cargo-audit');
@@ -24,6 +25,7 @@ async function getData(
             commandArray.push('--ignore', item);
         }
         commandArray.push('--json');
+        commandArray.push('--file', `${workingDirectory}/Cargo.lock`);
         await cargo.call(commandArray, {
             ignoreReturnCode: true,
             listeners: {
@@ -44,9 +46,17 @@ async function getData(
     return JSON.parse(stdout);
 }
 
+function removeTrailingSlash(str) {
+    if (str[str.length - 1] === '/') {
+        return str.substr(0, str.length - 1);
+    }
+    return str;
+}
+
 export async function run(actionInput: input.Input): Promise<void> {
     const ignore = actionInput.ignore;
-    const report = await getData(ignore);
+    const workingDirectory = removeTrailingSlash(actionInput.workingDirectory);
+    const report = await getData(ignore, workingDirectory);
     let shouldReport = false;
     if (!report.vulnerabilities.found) {
         core.info('No vulnerabilities were found');

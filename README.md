@@ -26,7 +26,7 @@ jobs:
   security_audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: rustsec/audit-check@v1.4.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -86,7 +86,7 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: rustsec/audit-check@v1.4.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -104,5 +104,6 @@ For each new advisory (including informal) an issue will be created:
 | ------------| -------- | ---------------------------------------------------------------------------| ------ | --------|
 | `token`     | ✓        | [GitHub token], usually a `${{ secrets.GITHUB_TOKEN }}`                    | string |         |
 | `ignore`    |          | Comma-separated list of advisory ids to ignore                             | string |         |
+| `working-directory`|   | The directory of the Cargo.toml / Cargo.lock files to scan.                | string | `.`     |
 
 [GitHub token]: https://help.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token
