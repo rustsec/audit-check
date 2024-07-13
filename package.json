@@ -34,7 +34,7 @@
         "url": "https://github.com/actions-rs/audit-check/issues"
     },
     "dependencies": {
-        "@clechasseur/rs-actions-core": "^3.0.1",
+        "@clechasseur/rs-actions-core": "^3.0.5",
         "nunjucks": "^3.2.4"
     },
     "devDependencies": {
