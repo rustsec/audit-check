@@ -1,6 +1,6 @@
 {
     "name": "rust-audit-check",
-    "version": "1.4.1",
+    "version": "2.0.0",
     "private": false,
     "description": "Security audit for security vulnerabilities",
     "main": "lib/main.js",
