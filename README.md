@@ -43,9 +43,9 @@ Note that informational advisories are not affecting the check status.
 
 ![Check screenshot](.github/check_screenshot.png)
 
-### Use prebuilt binary
+## Cache prebuilt binary
 
-To furter speed up the CI pipeline the action [taiki-e/install-action](https://github.com/marketplace/actions/install-development-tools) can be used. This will save time by using a prebuilt binary from cargo-audit's [release](https://github.com/rustsec/rustsec/releases) page instead of installing it from source each time this action is triggered.
+To further speed up the CI pipeline the binary can be cached after it has been build:
 
 ```yaml
 name: Security audit
@@ -59,15 +59,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: taiki-e/install-action@v2
+      - uses: actions/cache@v4
         with:
-          tool: cargo-audit
-          fallback: none
-      - uses: rustsec/audit-check@v1.4.1
+          path: ~/.cargo/bin/cargo-audit
+          key: ${{ runner.os }}-cargo-audit
+      - uses: rustsec/audit-check@v2.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
-
 
 #### Granular Permissions
 
