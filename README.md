@@ -43,31 +43,6 @@ Note that informational advisories are not affecting the check status.
 
 ![Check screenshot](.github/check_screenshot.png)
 
-## Cache prebuilt binary
-
-To further speed up the CI pipeline the binary can be cached after it has been build:
-
-```yaml
-name: Security audit
-on:
-  push:
-    paths: 
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
-jobs:
-  security_audit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cargo/bin/cargo-audit
-          key: ${{ runner.os }}-cargo-audit
-      - uses: rustsec/audit-check@v2.0.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-```
-
 #### Granular Permissions
 
 These are the typically used permissions:
@@ -96,6 +71,31 @@ this Action **WILL NOT** be able to create Checks for Pull Requests from the for
 see [actions-rs/clippy-check#2](https://github.com/actions-rs/clippy-check/issues/2) for details.\
 As a fallback this Action will output all found advisories to the stdout.\
 It is expected that this behavior will be fixed later by GitHub.
+
+### Cache prebuilt binary
+
+To further speed up the CI pipeline the binary can be cached after it has been build:
+
+```yaml
+name: Security audit
+on:
+  push:
+    paths: 
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+jobs:
+  security_audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/cargo-audit
+          key: ${{ runner.os }}-cargo-audit
+      - uses: rustsec/audit-check@v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+```
 
 ## Scheduled audit
 
