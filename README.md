@@ -72,6 +72,31 @@ see [actions-rs/clippy-check#2](https://github.com/actions-rs/clippy-check/issue
 As a fallback this Action will output all found advisories to the stdout.\
 It is expected that this behavior will be fixed later by GitHub.
 
+### Cache prebuilt binary
+
+To further speed up the CI pipeline the binary can be cached after it has been built:
+
+```yaml
+name: Security audit
+on:
+  push:
+    paths: 
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+jobs:
+  security_audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/cargo-audit
+          key: ${{ runner.os }}-cargo-audit
+      - uses: rustsec/audit-check@v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+```
+
 ## Scheduled audit
 
 Another option is to use [`schedule`](https://help.github.com/en/articles/events-that-trigger-workflows#scheduled-events-schedule) event
