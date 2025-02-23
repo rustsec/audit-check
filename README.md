@@ -74,7 +74,7 @@ It is expected that this behavior will be fixed later by GitHub.
 
 ### Cache prebuilt binary
 
-To further speed up the CI pipeline the binary can be cached after it has been build:
+To further speed up the CI pipeline the binary can be cached after it has been built:
 
 ```yaml
 name: Security audit
