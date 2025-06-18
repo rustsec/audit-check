@@ -15,6 +15,6 @@ export function get(): Input {
     return {
         token: input.getInput('token', { required: true }),
         ignore: input.getInputList('ignore', { required: false }),
-        workingDirectory: input.getInput('working-directory', { required: false }) ?? '.',
+        workingDirectory: input.getInput('working-directory', { required: false }) ?? '',
     };
 }
