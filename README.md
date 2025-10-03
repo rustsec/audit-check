@@ -62,7 +62,7 @@ github-token:
 
 The action does not raise issues when it is not triggered from a "cron" scheduled workflow.
 
-When running the action as scheduled it will crate issues but e.g. in PR / push fails the action.
+When running the action as scheduled it will create issues but e.g. in PR / push fails the action.
 
 #### Limitations
 
