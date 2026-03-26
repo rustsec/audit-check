@@ -9,6 +9,7 @@ export interface Input {
     token: string;
     ignore: string[];
     workingDirectory: string;
+    deny: string[];
 }
 
 export function get(): Input {
@@ -16,5 +17,6 @@ export function get(): Input {
         token: input.getInput('token', { required: true }),
         ignore: input.getInputList('ignore', { required: false }),
         workingDirectory: input.getInput('working-directory', { required: false }) ?? '.',
+        deny: input.getInputList('deny', { required: false }),
     };
 }

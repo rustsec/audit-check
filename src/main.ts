@@ -12,6 +12,7 @@ import * as reporter from './reporter';
 
 async function getData(
     ignore: string[] | undefined,
+    deny: string[] | undefined,
     workingDirectory: string,
 ): Promise<interfaces.Report> {
     const cargo = await Cargo.get();
@@ -23,6 +24,9 @@ async function getData(
         const commandArray = ['audit'];
         for (const item of ignore ?? []) {
             commandArray.push('--ignore', item);
+        }
+        for (const item of deny ?? []) {
+            commandArray.push('--deny', item);
         }
         commandArray.push('--json');
         commandArray.push('--file', `${workingDirectory}/Cargo.lock`);
@@ -55,8 +59,9 @@ function removeTrailingSlash(str) {
 
 export async function run(actionInput: input.Input): Promise<void> {
     const ignore = actionInput.ignore;
+    const deny = actionInput.deny;
     const workingDirectory = removeTrailingSlash(actionInput.workingDirectory);
-    const report = await getData(ignore, workingDirectory);
+    const report = await getData(ignore, deny, workingDirectory);
     let shouldReport = false;
     if (!report.vulnerabilities.found) {
         core.info('No vulnerabilities were found');
@@ -99,7 +104,7 @@ export async function run(actionInput: input.Input): Promise<void> {
         core.debug(
             `Action was triggered on a ${github.context.eventName} event, creating a Check report`,
         );
-        await reporter.reportCheck(actionInput.token, advisories, warnings);
+        await reporter.reportCheck(actionInput.token, advisories, warnings, deny);
     }
 }
 

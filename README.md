@@ -39,7 +39,8 @@ will not be performed if no dependencies were changed.
 
 In case of any security advisories found, [status check](https://help.github.com/en/articles/about-status-checks)
 created by this Action will be marked as "failed".\
-Note that informational advisories are not affecting the check status.
+By default, informational advisories (notices, unmaintained, unsound, yanked) do not affect the check status,
+but you can configure this behavior using the `deny` input parameter (see [Deny Options](#deny-options) below).
 
 ![Check screenshot](.github/check_screenshot.png)
 
@@ -98,6 +99,35 @@ For each new advisory (including informal) an issue will be created:
 
 ![Issue screenshot](.github/issue_screenshot.png)
 
+## Deny Options
+
+You can configure the action to fail on specific types of advisories using the `deny` input. This aligns with cargo audit's `--deny` flag behavior:
+
+```yaml
+- uses: rustsec/audit-check@v2.0.0
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    deny: warnings  # Fail on any warnings (unmaintained, unsound, yanked, notices)
+```
+
+### Available Deny Options
+
+- **`warnings`**: Fail on any warnings (includes unmaintained, unsound, yanked, and informational notices)
+- **`unmaintained`**: Fail only on unmaintained package warnings
+- **`unsound`**: Fail only on unsound package warnings  
+- **`yanked`**: Fail only on yanked package warnings
+
+You can combine multiple deny options:
+
+```yaml
+- uses: rustsec/audit-check@v2.0.0
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    deny: unmaintained,yanked  # Fail on unmaintained OR yanked packages
+```
+
+By default, the action only fails on critical security vulnerabilities. Using deny options allows you to also fail on other types of issues that cargo audit can detect.
+
 ## Inputs
 
 | Name        | Required | Description                                                                | Type   | Default |
@@ -105,5 +135,6 @@ For each new advisory (including informal) an issue will be created:
 | `token`     | ✓        | [GitHub token], usually a `${{ secrets.GITHUB_TOKEN }}`                    | string |         |
 | `ignore`    |          | Comma-separated list of advisory ids to ignore                             | string |         |
 | `working-directory`|   | The directory of the Cargo.toml / Cargo.lock files to scan.                | string | `.`     |
+| `deny`      |          | Comma-separated list of deny options: `warnings` (any), `unmaintained`, `unsound`, `yanked` | string |         |
 
 [GitHub token]: https://help.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token

@@ -15,6 +15,9 @@ inputs:
     description: The directory of the Cargo.toml / Cargo.lock files to scan.
     required: false
     default: .
+  deny:
+    description: 'Comma-separated list of deny options: warnings (any), unmaintained, unsound, yanked'
+    required: false
 
 runs:
   using: 'node24'

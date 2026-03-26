@@ -165,6 +165,7 @@ export async function reportCheck(
     token: string,
     vulnerabilities: Array<interfaces.Vulnerability>,
     warnings: Array<interfaces.Warning>,
+    deny: string[] = [],
 ): Promise<void> {
     const client = github.getOctokit(token, {userAgent: USER_AGENT});
     const reporter = new checks.CheckReporter(client.rest, 'Security audit');
@@ -189,13 +190,30 @@ See https://github.com/actions-rs/clippy-check/issues/2 for details.`);
             core.info('Posting audit report here instead.');
 
             core.info(makeReport(vulnerabilities, warnings));
-            if (stats.critical > 0) {
+
+            const shouldFail = stats.critical > 0 || 
+                (deny.includes('warnings') && (stats.unmaintained > 0 || stats.unsound > 0 || stats.notices > 0 || stats.other > 0)) ||
+                (deny.includes('unmaintained') && stats.unmaintained > 0) ||
+                (deny.includes('unsound') && stats.unsound > 0) ||
+                (deny.includes('yanked') && stats.other > 0);
+                
+            if (shouldFail) {
+                const reasons: string[] = [];
+                if (stats.critical > 0) reasons.push(`${stats.critical} critical vulnerabilities`);
+                if (deny.includes('warnings') && stats.unmaintained > 0) reasons.push(`${stats.unmaintained} unmaintained packages`);
+                if (deny.includes('warnings') && stats.unsound > 0) reasons.push(`${stats.unsound} unsound packages`);
+                if (deny.includes('warnings') && stats.notices > 0) reasons.push(`${stats.notices} notice(s)`);
+                if (deny.includes('warnings') && stats.other > 0) reasons.push(`${stats.other} yanked/other issues`);
+                if (deny.includes('unmaintained') && stats.unmaintained > 0) reasons.push(`${stats.unmaintained} unmaintained packages`);
+                if (deny.includes('unsound') && stats.unsound > 0) reasons.push(`${stats.unsound} unsound packages`);
+                if (deny.includes('yanked') && stats.other > 0) reasons.push(`${stats.other} yanked packages`);
+                
                 throw new Error(
-                    'Critical vulnerabilities were found, marking check as failed',
+                    `Security audit failed due to: ${reasons.join(', ')}`,
                 );
             } else {
                 core.info(
-                    'No critical vulnerabilities were found, not marking check as failed',
+                    'No issues found that would cause failure based on deny configuration',
                 );
                 return;
             }
@@ -211,20 +229,43 @@ See https://github.com/actions-rs/clippy-check/issues/2 for details.`);
             summary: summary,
             text: body,
         };
-        const status = stats.critical > 0 ? 'failure' : 'success';
+
+        const shouldFail = stats.critical > 0 || 
+            (deny.includes('warnings') && (stats.unmaintained > 0 || stats.unsound > 0 || stats.notices > 0 || stats.other > 0)) ||
+            (deny.includes('unmaintained') && stats.unmaintained > 0) ||
+            (deny.includes('unsound') && stats.unsound > 0) ||
+            (deny.includes('yanked') && stats.other > 0);
+            
+        const status = shouldFail ? 'failure' : 'success';
         await reporter.finishCheck(status, output);
     } catch (error) {
         await reporter.cancelCheck();
         throw error;
     }
 
-    if (stats.critical > 0) {
+    const shouldFail = stats.critical > 0 || 
+        (deny.includes('warnings') && (stats.unmaintained > 0 || stats.unsound > 0 || stats.notices > 0 || stats.other > 0)) ||
+        (deny.includes('unmaintained') && stats.unmaintained > 0) ||
+        (deny.includes('unsound') && stats.unsound > 0) ||
+        (deny.includes('yanked') && stats.other > 0);
+
+    if (shouldFail) {
+        const reasons: string[] = [];
+        if (stats.critical > 0) reasons.push(`${stats.critical} critical vulnerabilities`);
+        if (deny.includes('warnings') && stats.unmaintained > 0) reasons.push(`${stats.unmaintained} unmaintained packages`);
+        if (deny.includes('warnings') && stats.unsound > 0) reasons.push(`${stats.unsound} unsound packages`);
+        if (deny.includes('warnings') && stats.notices > 0) reasons.push(`${stats.notices} notice(s)`);
+        if (deny.includes('warnings') && stats.other > 0) reasons.push(`${stats.other} yanked/other issues`);
+        if (deny.includes('unmaintained') && stats.unmaintained > 0) reasons.push(`${stats.unmaintained} unmaintained packages`);
+        if (deny.includes('unsound') && stats.unsound > 0) reasons.push(`${stats.unsound} unsound packages`);
+        if (deny.includes('yanked') && stats.other > 0) reasons.push(`${stats.other} yanked packages`);
+        
         throw new Error(
-            'Critical vulnerabilities were found, marking check as failed',
+            `Security audit failed due to: ${reasons.join(', ')}`,
         );
     } else {
         core.info(
-            'No critical vulnerabilities were found, not marking check as failed',
+            'No critical issues found that would cause failure based on deny configuration',
         );
         return;
     }
