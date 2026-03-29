@@ -1,5 +1,6 @@
 import * as process from 'process';
 import * as os from 'os';
+import * as path from 'path';
 
 import * as core from '@actions/core';
 import * as github from '@actions/github';
@@ -25,7 +26,9 @@ async function getData(
             commandArray.push('--ignore', item);
         }
         commandArray.push('--json');
-        commandArray.push('--file', `${workingDirectory}/Cargo.lock`);
+        if (workingDirectory != '') {
+            commandArray.push('--file', path.join(workingDirectory, 'Cargo.lock'));
+        }
         await cargo.call(commandArray, {
             ignoreReturnCode: true,
             listeners: {
