@@ -27,6 +27,7 @@ nunjucks.configure({
 function makeReport(
     vulnerabilities: Array<interfaces.Vulnerability>,
     warnings: Array<interfaces.Warning>,
+    dependencyTrees: interfaces.DependencyTrees = {},
 ): string {
     const preparedWarnings: Array<templates.ReportWarning> = [];
     for (const warning of warnings) {
@@ -76,6 +77,17 @@ function makeReport(
     return nunjucks.renderString(templates.REPORT, {
         vulnerabilities: vulnerabilities,
         warnings: preparedWarnings,
+        dependencyTrees: dependencyTrees,
+    });
+}
+
+function makeVulnerabilityIssue(
+    vulnerability: interfaces.Vulnerability,
+    dependencyTree?: interfaces.DependencyTree,
+): string {
+    return nunjucks.renderString(templates.VULNERABILITY_ISSUE, {
+        vulnerability: vulnerability,
+        dependencyTree: dependencyTree,
     });
 }
 
@@ -165,6 +177,7 @@ export async function reportCheck(
     token: string,
     vulnerabilities: Array<interfaces.Vulnerability>,
     warnings: Array<interfaces.Warning>,
+    dependencyTrees: interfaces.DependencyTrees = {},
 ): Promise<void> {
     const client = github.getOctokit(token, {userAgent: USER_AGENT});
     const reporter = new checks.CheckReporter(client.rest, 'Security audit');
@@ -188,7 +201,7 @@ when executed for a forked repos. \
 See https://github.com/actions-rs/clippy-check/issues/2 for details.`);
             core.info('Posting audit report here instead.');
 
-            core.info(makeReport(vulnerabilities, warnings));
+            core.info(makeReport(vulnerabilities, warnings, dependencyTrees));
             if (stats.critical > 0) {
                 throw new Error(
                     'Critical vulnerabilities were found, marking check as failed',
@@ -205,7 +218,7 @@ See https://github.com/actions-rs/clippy-check/issues/2 for details.`);
     }
 
     try {
-        const body = makeReport(vulnerabilities, warnings);
+        const body = makeReport(vulnerabilities, warnings, dependencyTrees);
         const output = {
             title: 'Security advisories found',
             summary: summary,
@@ -256,6 +269,7 @@ export async function reportIssues(
     token: string,
     vulnerabilities: Array<interfaces.Vulnerability>,
     warnings: Array<interfaces.Warning>,
+    dependencyTrees: interfaces.DependencyTrees = {},
 ): Promise<void> {
     const { owner, repo } = github.context.repo;
 
@@ -270,9 +284,10 @@ export async function reportIssues(
             continue;
         }
 
-        const body = nunjucks.renderString(templates.VULNERABILITY_ISSUE, {
-            vulnerability: vulnerability,
-        });
+        const body = makeVulnerabilityIssue(
+            vulnerability,
+            dependencyTrees[vulnerability.package.name],
+        );
         const issue = await client.rest.issues.create({
             owner: owner,
             repo: repo,

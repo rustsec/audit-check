@@ -27,6 +27,16 @@ export interface VulnerabilitiesInfo {
     list: Vulnerability[];
 }
 
+export interface DependencyTree {
+    command: string;
+    output?: string;
+    error?: string;
+}
+
+export interface DependencyTrees {
+    [packageName: string]: DependencyTree;
+}
+
 export interface Vulnerability {
     advisory: Advisory;
     package: Package;

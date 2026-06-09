@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`reporter renders Cargo tree failures in vulnerability issues 1`] = `
+"
+> Test advisory
+
+| Details             |                                                |
+| ------------------- | ---------------------------------------------- |
+| Package             | \`rustls-webpki\`                      |
+| Version             | \`0.101.7\`                   |
+| URL                 | [https://example.com/advisory](https://example.com/advisory) |
+| Date                | 2024-01-01                         |
+
+A test advisory description.
+
+## Cargo tree
+
+Could not generate the Cargo tree with \`cargo tree -e features -i rustls-webpki\`: package ID specification did not match any packages
+
+See [advisory page](https://rustsec.org/advisories/RUSTSEC-2024-0001.html) for additional details.
+"
+`;
+
+exports[`reporter renders Cargo trees in check reports 1`] = `
+"
+## Vulnerabilities
+
+### [RUSTSEC-2024-0001](https://rustsec.org/advisories/RUSTSEC-2024-0001.html)
+
+> Test advisory
+
+| Details             |                                                |
+| ------------------- | ---------------------------------------------- |
+| Package             | \`rustls-webpki\`                      |
+| Version             | \`0.101.7\`                   |
+| URL                 | [https://example.com/advisory](https://example.com/advisory) |
+| Date                | 2024-01-01                         |
+
+A test advisory description.
+
+#### Cargo tree
+
+\`\`\`text
+rustls-webpki v0.101.7
+├── rustls v0.21.12
+│   └── example-app v0.1.0
+└── rustls feature "webpki"
+    └── rustls feature "default"
+\`\`\`
+
+
+"
+`;
+
+exports[`reporter renders Cargo trees in vulnerability issues 1`] = `
+"
+> Test advisory
+
+| Details             |                                                |
+| ------------------- | ---------------------------------------------- |
+| Package             | \`rustls-webpki\`                      |
+| Version             | \`0.101.7\`                   |
+| URL                 | [https://example.com/advisory](https://example.com/advisory) |
+| Date                | 2024-01-01                         |
+
+A test advisory description.
+
+## Cargo tree
+
+\`\`\`text
+rustls-webpki v0.101.7
+├── rustls v0.21.12
+│   └── example-app v0.1.0
+└── rustls feature "webpki"
+    └── rustls feature "default"
+\`\`\`
+
+See [advisory page](https://rustsec.org/advisories/RUSTSEC-2024-0001.html) for additional details.
+"
+`;

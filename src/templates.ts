@@ -37,6 +37,20 @@ export const REPORT = `
 {% endif %}
 
 {{ v.advisory.description }}
+
+{% set dependencyTree = dependencyTrees[v.package.name] %}
+{% if dependencyTree %}
+#### Cargo tree
+
+{% if dependencyTree.output %}
+\`\`\`text
+{{ dependencyTree.output | safe }}
+\`\`\`
+{% else %}
+Could not generate the Cargo tree with \`{{ dependencyTree.command }}\`: {{ dependencyTree.error }}
+{% endif %}
+
+{% endif %}
 {% endfor %}
 {% endif %}
 
@@ -101,6 +115,18 @@ export const VULNERABILITY_ISSUE = `
 
 {{ vulnerability.advisory.description }}
 
+{% if dependencyTree %}
+## Cargo tree
+
+{% if dependencyTree.output %}
+\`\`\`text
+{{ dependencyTree.output | safe }}
+\`\`\`
+{% else %}
+Could not generate the Cargo tree with \`{{ dependencyTree.command }}\`: {{ dependencyTree.error }}
+{% endif %}
+
+{% endif %}
 See [advisory page](https://rustsec.org/advisories/{{ vulnerability.advisory.id }}.html) for additional details.
 `;
 

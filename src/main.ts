@@ -46,7 +46,82 @@ async function getData(
     return JSON.parse(stdout);
 }
 
-function removeTrailingSlash(str) {
+function summarizeTreeError(error: string): string {
+    const summary = error.trim().split(/\r?\n/)[0];
+    return summary || 'cargo tree exited without an error message';
+}
+
+export async function collectDependencyTrees(
+    vulnerabilities: Array<interfaces.Vulnerability>,
+    workingDirectory: string,
+): Promise<interfaces.DependencyTrees> {
+    const packageNames = [
+        ...new Set(vulnerabilities.map((item) => item.package.name)),
+    ];
+    const dependencyTrees: interfaces.DependencyTrees = {};
+
+    if (packageNames.length === 0) {
+        return dependencyTrees;
+    }
+
+    const cargo = await Cargo.get();
+
+    for (const packageName of packageNames) {
+        const command = `cargo tree -e features -i ${packageName}`;
+        let stdout = '';
+        let stderr = '';
+
+        try {
+            core.startGroup(`Calling ${command}`);
+            const exitCode = await cargo.call(
+                ['tree', '-e', 'features', '-i', packageName],
+                {
+                    cwd: workingDirectory,
+                    ignoreReturnCode: true,
+                    listeners: {
+                        stdout: (buffer) => {
+                            stdout += buffer.toString();
+                        },
+                        stderr: (buffer) => {
+                            stderr += buffer.toString();
+                        },
+                    },
+                },
+            );
+
+            if (exitCode === 0) {
+                dependencyTrees[packageName] = {
+                    command: command,
+                    output: stdout.trim(),
+                };
+            } else {
+                const error = summarizeTreeError(stderr || stdout);
+                core.warning(
+                    `Unable to generate reverse dependency tree for ${packageName}: ${error}`,
+                );
+                dependencyTrees[packageName] = {
+                    command: command,
+                    error: error,
+                };
+            }
+        } catch (error) {
+            const summary = summarizeTreeError((error as Error).message);
+            core.warning(
+                `Unable to generate reverse dependency tree for ${packageName}: ${summary}`,
+            );
+            dependencyTrees[packageName] = {
+                command: command,
+                error: summary,
+            };
+        } finally {
+            core.endGroup();
+        }
+    }
+
+    return dependencyTrees;
+}
+
+function removeTrailingSlash(str: string): string {
     if (str[str.length - 1] === '/') {
         return str.substr(0, str.length - 1);
     }
@@ -90,16 +165,30 @@ export async function run(actionInput: input.Input): Promise<void> {
 
     // const octokit = github.getOctokit(actionInput.token, {userAgent: USER_AGENT});
     const advisories = report.vulnerabilities.list;
+    const dependencyTrees = await collectDependencyTrees(
+        advisories,
+        workingDirectory,
+    );
     if (github.context.eventName == 'schedule') {
         core.debug(
             'Action was triggered on a schedule event, creating an Issues report',
         );
-        await reporter.reportIssues(actionInput.token, advisories, warnings);
+        await reporter.reportIssues(
+            actionInput.token,
+            advisories,
+            warnings,
+            dependencyTrees,
+        );
     } else {
         core.debug(
             `Action was triggered on a ${github.context.eventName} event, creating a Check report`,
         );
-        await reporter.reportCheck(actionInput.token, advisories, warnings);
+        await reporter.reportCheck(
+            actionInput.token,
+            advisories,
+            warnings,
+            dependencyTrees,
+        );
     }
 }
 
